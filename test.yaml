@@ -1,0 +1,25 @@
+---
+- name: Ping URL Playbook
+  hosts: localhost
+  gather_facts: no
+  vars:
+    target_url: "https://www.example.com"  # Change this to your desired URL
+
+  tasks:
+    - name: Ping the target URL
+      uri:
+        url: "{{ target_url }}"
+        method: GET
+        status_code: 200
+        return_content: yes
+      register: ping_result
+
+    - name: Display the response content
+      debug:
+        var: ping_result.content
+
+    - name: Check if the ping was successful
+      assert:
+        that:
+          - ping_result.status == 200
+        fail_msg: "The URL {{ target_url }} returned a status code other than 200."
