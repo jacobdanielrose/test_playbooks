@@ -1,10 +1,7 @@
 ---
 - name: Ping hosts Playbook
-  hosts: localhost
+  hosts: "{{ target_hosts | default('localhost') }}"
   gather_facts: no
-  vars:
-    target_url: "localhost"  # Change this to your desired URL
-
   tasks:
     - name: Ping all managed nodes
       ansible.builtin.ping:
@@ -13,8 +10,3 @@
         var: ping_result.content
       register:
         ping_result
-    # - name: Check if the ping was successful
-    #   assert:
-    #     that:
-    #       - ping_result.status == 200
-    #     fail_msg: "The URL {{ target_url }} returned a status code other than 200."
