@@ -1,6 +1,6 @@
 ---
 - name: Ping hosts Playbook
-  hosts: "{{ target_hosts | default('localhost') }}"
+  hosts: "{{ target_hosts }}"
   gather_facts: no
   tasks:
     - name: Ping all managed nodes
