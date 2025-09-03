@@ -1,12 +1,25 @@
 ---
-- name: Ping hosts Playbook
+- name: Show top 5 disk usage directories and their contents
   hosts: "{{ target_hosts }}"
   gather_facts: no
   tasks:
-    - name: Ping all managed nodes
-      ansible.builtin.ping:
-    - name: Display the response content
+    - name: Get disk usage
+      shell: df -h --output=target,used | tail -n +2 | sort -k2 -hr | head -5
+      register: df_output
+
+    - name: Extract top 5 directories
+      set_fact:
+        top_dirs: "{{ df_output.stdout_lines | map('regex_replace', '^\\s*(\\S+).*', '\\1') | list }}"
+
+    - name: Show contents of each top directory
+      shell: ls -lhA "{{ item }}"
+      loop: "{{ top_dirs }}"
+      register: dir_contents
+
+    - name: Display directory contents
       debug:
-        var: ping_result.content
-      register:
-        ping_result
+        msg: |
+          Directory: {{ item.item }}
+          Contents:
+          {{ item.stdout }}
+      loop: "{{ dir_contents.results }}"
